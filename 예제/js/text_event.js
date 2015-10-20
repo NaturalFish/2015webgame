@@ -65,7 +65,6 @@ function drawScreen() {
 	var Context = theCanvas.getContext('2d'); 
     
     Context.drawImage(bg, 0, 0, 1024, 700);
-    Context.drawImage(p, intMouseX, intMouseY);
     Context.fillStyle = '#fff';
     Context.font = '24px nanumgothic';
     Context.textBaseline = 'top';
