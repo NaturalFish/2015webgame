@@ -51,7 +51,7 @@ function init() {
     bgm = new Audio();
     bgm.src = "../resources/sound/bgm.mp3";
     bgm.loop = true;
-    document.body.appendChild(bgm);
+    bgm.play();
     
     intervalID = setInterval(update, 1000 / fps);
 }
