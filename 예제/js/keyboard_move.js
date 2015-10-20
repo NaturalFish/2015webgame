@@ -13,7 +13,7 @@ var Context;
 var uaaa;
 var fsz = 1;
 var intTime = 0;
-var launchDir = 'none';
+var launchDir = 'u';
 var beforeKeyState = 'up';      //이전 키눌림 상태
 var nowKeyState = 'up';         //현재 키눌림 상태
 var fps = 30;                   //초당 프레임
@@ -30,9 +30,10 @@ var isKeyDown = new Array();    //키가 눌렸는지
 function reset() {
     Canvas = document.getElementById('c');
     Context = Canvas.getContext('2d');
+    
     intPlayerX = 480;
     intPlayerY = 300;
-    uaaa = [];
+    uaaa = {};
     arrUaaa = [];       //모든 배열 비우기
     arrBalls = [];
     
@@ -47,6 +48,10 @@ function reset() {
 //로드 되었을 때 실행
 function init() {
     reset();
+    bgm = new Audio();
+    bgm.src = "../resources/sound/bgm.mp3";
+    bgm.loop = true;
+    document.body.appendChild(bgm);
     
     intervalID = setInterval(update, 1000 / fps);
 }
@@ -69,7 +74,13 @@ function game() {
             for(var i = 0; i < 3; ++i) {
                 rndClr.push(Math.floor(Math.random() * 16).toString(16));   //랜덤 색 설정
             }
-            uaaa = [intPlayerX, intPlayerY, "#" + rndClr[0] + rndClr[1] + rndClr[2], fsz, launchDir];  //누르고 있을동안 출력될 '으아아아'
+            uaaa = {
+                x: intPlayerX,
+                y: intPlayerY,
+                color: "#" + rndClr[0] + rndClr[1] + rndClr[2],
+                fontSize: fsz,
+                launchDir: launchDir
+            };  //누르고 있을동안 출력될 '으아아아'
         }
         if(isKeyDown[37]) {
             intPlayerX -= playerSpeed;  //좌
@@ -126,6 +137,7 @@ function onGameStart() {
 //게임 오버
 function onGameOver() {
     gameState = Game_STATE_OVER;
+    bgm.pause();
 }
 
 //적 생성
@@ -207,6 +219,9 @@ function moveBall() {
         if(isCollisionWithPlayer(arrBalls[i].x, arrBalls[i].y)) {
             onGameOver();
         }
+//        if(isCollisionWithUaaa(arrBalls[i].x, arrBalls[i].y)) {
+//            arrBalls.pop(i);
+//        }
     }
 }
 
@@ -223,6 +238,14 @@ function isCollisionWithPlayer(x, y) {
     return false;
 }
 
+//function isCollisionWithUaaa(x, y) {
+//    for(var i = 0; i < arrUaaa.length; ++i) {
+//        if(arrUaaa[i].x < x && x < arrUaaa[i].x + arrUaaa[i].fontSize * 4 && arrUaaa[i].y < y && y < arrUaaa[i].x + arrUaaa[i].fontSize)
+//            return true;
+//    }
+//    return false;
+//}
+
 //캔버스 출력
 function drawScreen() {
 	var Context = Canvas.getContext('2d'); 
@@ -230,35 +253,35 @@ function drawScreen() {
     
     if(gameState == Game_STATE_READY) {
         Context.fillStyle = '#fff';
-        Context.font = '24px 궁서';
+        Context.font = '24px 궁서체';
         Context.textBaseline = 'top';
         Context.fillText('호진이 으아아아 발사기', 100, 50);
         Context.fillText('누르다 탭 시작하기 위해', 100, 250);
     }
     else if(gameState == Game_STATE_GAME) {
         Context.fillStyle = '#fff';
-        Context.font = '24px 궁서';
+        Context.font = '24px 궁서체';
         Context.fillText('누르다 엔터 끝내기 위해', 100, 50);
         Context.fillText('해보자 누르기 스페이스 바', 100, 80);
         
         //스페이스 바를 누르고 있을 동안 출력
         if(nowKeyState == 'down') {
-            Context.font = uaaa[3] + 'px 궁서';
-            Context.fillStyle = uaaa[2];
-            Context.fillText('으아아아', uaaa[0], uaaa[1]);
+            Context.font = uaaa.fontSize + 'px 궁서체';
+            Context.fillStyle = '#fff';
+            Context.fillText('으아아아', uaaa.x, uaaa.y);
         }
         
         //스페이스 바를 떼었을 때 '으아아아'를 발사
         for(var i = 0; i < arrUaaa.length; ++i) {
-            Context.font = arrUaaa[i][3] + 'px 궁서';
-            Context.fillStyle = arrUaaa[i][2];
-            switch(arrUaaa[i][4]) {
-                case 'l' : arrUaaa[i][0] -= arrUaaa[i][3]; break;
-                case 'u' : arrUaaa[i][1] -= arrUaaa[i][3]; break;
-                case 'r' : arrUaaa[i][0] += arrUaaa[i][3]; break;
-                case 'd' : arrUaaa[i][1] += arrUaaa[i][3]; break;
+            Context.font = arrUaaa[i].fontSize + 'px 궁서체';
+            Context.fillStyle = '#fff';
+            switch(arrUaaa[i].launchDir) {
+                case 'l' : arrUaaa[i].x -= arrUaaa[i].fontSize; break;
+                case 'u' : arrUaaa[i].y -= arrUaaa[i].fontSize; break;
+                case 'r' : arrUaaa[i].x += arrUaaa[i].fontSize; break;
+                case 'd' : arrUaaa[i].y += arrUaaa[i].fontSize; break;
             }
-            Context.fillText('으아아아', arrUaaa[i][0], arrUaaa[i][1]);
+            Context.fillText('으아아아', arrUaaa[i].x, arrUaaa[i].y);
         }
             
         Context.drawImage(p, intPlayerX, intPlayerY);               //플레이어 출력
@@ -268,7 +291,7 @@ function drawScreen() {
     }
     else if(gameState == Game_STATE_OVER) {
         Context.fillStyle = '#fff';
-        Context.font = '30px 궁서';
+        Context.font = '30px 궁서체';
         Context.textBaseline = 'top';
         Context.fillText('누르다 R 다시 시작하기 위해', 100, 50);
         for(var i = 0; i < arrBalls.length; ++i) {
