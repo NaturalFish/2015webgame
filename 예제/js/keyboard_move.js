@@ -43,15 +43,15 @@ function reset() {
     p.src = "../resources/img/player.png";
     ball = new Image();
     ball.src = "../resources/img/ball.png";
+    bgm.play();
 }
 
 //로드 되었을 때 실행
 function init() {
-    reset();
     bgm = new Audio();
     bgm.src = "../resources/sound/bgm.mp3";
     bgm.loop = true;
-    bgm.play();
+    reset();
     
     intervalID = setInterval(update, 1000 / fps);
 }
