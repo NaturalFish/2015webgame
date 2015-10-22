@@ -8,7 +8,7 @@ function FrameCounter() {
 
 var frameCounter = new FrameCounter();
 
-FrameCounter.prototype.countFrame = function() {
+FrameCounter.prototype.CountFrame = function() {
     this.frameCount++;          //실행 횟수 카운트
     var tmpDate = new Date();   //시간 저장
     if(this.lastTime + 1000 < tmpDate.getTime()) {
